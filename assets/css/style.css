@@ -59,9 +59,9 @@ section {
   display: flex;
 }
 
-#five-day .card {
+#five-day .five-day-card {
   margin: 10px;
-  background-color: ;
+  background-color: red;
 }
 
 

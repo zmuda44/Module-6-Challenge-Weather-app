@@ -4,7 +4,7 @@ const searchInputEl = document.getElementById("search-input");
 const currentWeatherEl = document.getElementById("current-weather");
 const fiveDayEl = document.getElementById("five-day");
 const cityBtnContEl = document.getElementById("cities-btn-container") 
-// let cityBtn = document.getElementsByClassName("cityBtn")
+let cityBtn = document.getElementsByClassName("cityBtn")
 
 
 //Get cities from local storage or set to an empty array
@@ -19,28 +19,18 @@ function getCurrentWeatherFromStorage () {
   return currentWeather
 }
 
-function getFiveDayForecastFromStorage () {
-  let fiveDayForecast = JSON.parse(localStorage.getItem('fiveDayForecast')) || null;
-  return fiveDayForecast
-}
-
 //Create Buttons from previous searches
 function createCitiesButtons() {
   cityBtnContEl.innerHTML = ''; // Clear existing buttons
   let cities = getCitiesFromStorage();
-  
-  if (cities.length > 5) {
-    cities.shift()
-  }
-  // if(cities)
+  // console.log(cities);
+  // console.log("console log for cities")
+  if(cities)
   cities.forEach(city => {
-    
-      let cityBtn = document.createElement("button");
-      cityBtn.textContent = city;
-      cityBtn.classList.add("cityBtn")
-      cityBtnContEl.insertBefore(cityBtn, cityBtnContEl.firstChild);
-  
-  localStorage.setItem('cities', JSON.stringify(cities))
+    let cityBtn = document.createElement("button");
+    cityBtn.textContent = city;
+    cityBtn.classList.add("cityBtn")
+    cityBtnContEl.appendChild(cityBtn);
   });
   
   
@@ -49,7 +39,7 @@ function createCitiesButtons() {
 //Create current weather card to display on page
 function createCurrentWeatherCard () {
   let currentWeather = getCurrentWeatherFromStorage();
-  
+  // console.log(currentWeather);
   
   if(currentWeather == null) {
     console.log("there is no current weather")
@@ -58,48 +48,12 @@ function createCurrentWeatherCard () {
   else {
   currentWeatherEl.innerHTML = `
     <h3>${currentWeather.city} ${currentWeather.date}</h3>
-    <p>Temp: ${currentWeather.temp}^F<p>
-    <p>Wind: ${currentWeather.wind} MPH<p>
-    <p>Humidity ${currentWeather.humidity}%<p>`
+    <p>${currentWeather.temp}<p>
+    <p>${currentWeather.wind}<p>
+    <p>${currentWeather.humidity}<p>`
 }
 
 } //end createCurrentWeather Card function
-
-function createFiveDayForecastCards (){
-  fiveDayEl.innerHTML = ''
-  let fiveDayForecast = getFiveDayForecastFromStorage ()
-
-  for (i=0; i < fiveDayForecast.length; i++) {
-    console.log(fiveDayForecast)
-    
-    const fiveDayForecastCard = document.createElement("div")
-    fiveDayForecastCard.setAttribute("class", "five-day-card");
-
-    const date = document.createElement("h3")
-    date.textContent = `${fiveDayForecast[i].date} ${fiveDayForecast[i].city}`
-    fiveDayForecastCard.appendChild(date)
-    fiveDayEl.appendChild(fiveDayForecastCard)
-
-    const temp = document.createElement("p")
-    temp.textContent = fiveDayForecast[i].temp
-    fiveDayForecastCard.appendChild(temp)
-    fiveDayEl.appendChild(fiveDayForecastCard)
-
-    const wind = document.createElement("p")
-    wind.textContent = fiveDayForecast[i].wind
-    fiveDayForecastCard.appendChild(wind)
-    fiveDayEl.appendChild(fiveDayForecastCard)
-
-    const humidity = document.createElement("p")
-    humidity.textContent = fiveDayForecast[i].humidity
-    fiveDayForecastCard.appendChild(humidity)
-    fiveDayEl.appendChild(fiveDayForecastCard)
-  
-  }
-
-  
-}
-
 
 
 
@@ -114,20 +68,26 @@ searchBtnEl.addEventListener("click", function(e) {
   searchInputEl.value = '';
 })
 
-
-
-//Add event listener to parent container of dynamically created buttons. 
-cityBtnContEl.addEventListener("click", function (e) {
-  if (e.target.classList.contains("cityBtn")) {
-    let cityBtnText = e.target.textContent;
-    searchApi(cityBtnText);
-  }
-})
-
- //Runs the create buttons function on page load and will take whatever is in local storage and display it
+//Runs the create buttons function on page load and will take whatever is in local storage and display it
 createCitiesButtons();
 createCurrentWeatherCard();
-createFiveDayForecastCards(); 
+buttonSearch();
+// createFiveDayForecastCard();
+
+
+
+function buttonSearch () {
+  
+  for(i=0; i < cityBtn.length; i++) {
+    cityBtn[i].addEventListener("click", function (e) {
+      let cityBtnText = e.target.textContent 
+      searchApi(cityBtnText)
+    })
+  }
+  
+  
+}
+  
 
 
 
@@ -139,7 +99,6 @@ createFiveDayForecastCards();
 
 
 function searchApi (city) {
-  
   //Must start out with searching API for city by city name
   let weatherCityURL = `http://api.openweathermap.org/data/2.5/forecast?q=${city},us&appid=52d4c71f9cae17ae79966146d4c3044e`
   
@@ -182,10 +141,6 @@ function searchApi (city) {
 
       //Push new city to array and create a new set of buttons
       let cities = getCitiesFromStorage()
-      //If city already already there do not include new city. Mainly for buttons
-      if(cities.includes(currentWeather.city)) {
-        return
-      }
       cities.push(currentWeather.city);
       localStorage.setItem('cities', JSON.stringify(cities));
       createCitiesButtons();
@@ -193,28 +148,24 @@ function searchApi (city) {
 
     let foreCastGeo = `http://api.openweathermap.org/data/2.5/forecast?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&cnt=5&appid=52d4c71f9cae17ae79966146d4c3044e`
 
-    fetch(foreCastGeo) 
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        let dataList = data.list
-        let fiveDayForecast = []
-        
-        for (listItem of dataList) {
-         let forecastWeather = {
-           city: data.city.name,
-           date: Date(listItem.dt*1000),
-           temp: `Temp: ${listItem.main.temp} F`,
-           wind: `Wind: ${listItem.wind.speed} MPH`,
-           humidity: `Humidity: ${listItem.main.humidity} %`,
-         }
-         
-         fiveDayForecast.push(forecastWeather);
-         localStorage.setItem('fiveDayForecast', JSON.stringify(fiveDayForecast))
-         createFiveDayForecastCards()
-        }
-      })
+    // fetch(foreCastGeo) 
+    //   .then(function (response) {
+    //     return response.json();
+    //   })
+    //   .then(function (data) {
+    //     let fiveDayWeather = []
+    //     for (listItem of dataList) {
+    //       let forecastWeather = {
+    //         city: data.city.name,
+    //         date: listItem.dt,
+    //         temp: `Temp: ${listItem.main.temp} F`,
+    //         wind: `Wind: ${listItem.wind.speed} MPH`,
+    //         humidity: `Humidity: ${listItem.main.humidity} %`,
+    //       }
+    //       fiveDayWeather.push(forecastWeather);
+    //       // console.log(fiveDayWeather)
+    //     }
+    //   })
     
   }) //end of .then where you started using other urls
 
