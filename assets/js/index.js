@@ -52,13 +52,13 @@ function createCurrentWeatherCard () {
   
   
   if(currentWeather == null) {
-    console.log("there is no current weather")
+    
   }
 
   else {
   currentWeatherEl.innerHTML = `
-    <h3>${currentWeather.city} ${currentWeather.date}</h3>
-    <p>Temp: ${currentWeather.temp}^F<p>
+    <div><h3>${currentWeather.city} ${currentWeather.date}</h3><img src="${currentWeather.icon}"></div>
+    <p>Temp: ${currentWeather.temp}&degF<p>
     <p>Wind: ${currentWeather.wind} MPH<p>
     <p>Humidity ${currentWeather.humidity}%<p>`
 }
@@ -70,29 +70,35 @@ function createFiveDayForecastCards (){
   let fiveDayForecast = getFiveDayForecastFromStorage ()
 
   for (i=0; i < fiveDayForecast.length; i++) {
-    console.log(fiveDayForecast)
+    
     
     const fiveDayForecastCard = document.createElement("div")
     fiveDayForecastCard.setAttribute("class", "five-day-card");
 
     const date = document.createElement("h3")
-    date.textContent = `${fiveDayForecast[i].date} ${fiveDayForecast[i].city}`
-    fiveDayForecastCard.appendChild(date)
-    fiveDayEl.appendChild(fiveDayForecastCard)
+    date.textContent = `${fiveDayForecast[i].date}`
+    fiveDayForecastCard.appendChild(date)    
+
+    const icon = document.createElement("img")
+    icon.setAttribute("src", fiveDayForecast[i].icon)
+    fiveDayForecastCard.appendChild(icon)
+    fiveDayEl.appendChild(fiveDayForecastCard);
 
     const temp = document.createElement("p")
-    temp.textContent = fiveDayForecast[i].temp
+    //Special note: Couldn't do HTML symbol without HTML
+    temp.innerHTML = `Temp: ${fiveDayForecast[i].temp}&degF`
     fiveDayForecastCard.appendChild(temp)
-    fiveDayEl.appendChild(fiveDayForecastCard)
+    
 
     const wind = document.createElement("p")
-    wind.textContent = fiveDayForecast[i].wind
+    wind.textContent = `Wind: ${fiveDayForecast[i].wind} MPH`
     fiveDayForecastCard.appendChild(wind)
-    fiveDayEl.appendChild(fiveDayForecastCard)
+    
 
     const humidity = document.createElement("p")
-    humidity.textContent = fiveDayForecast[i].humidity
+    humidity.textContent = `Humidity: ${fiveDayForecast[i].humidity}%`
     fiveDayForecastCard.appendChild(humidity)
+
     fiveDayEl.appendChild(fiveDayForecastCard)
   
   }
@@ -160,6 +166,8 @@ function searchApi (city) {
       lat: data.city.coord.lat,
       lon: data.city.coord.lon,
     }
+   
+
     
     let currentGeoURL = `http://api.openweathermap.org/data/2.5/weather?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
     
@@ -168,13 +176,18 @@ function searchApi (city) {
       return response.json();
     })
     .then (function (data) {
+      let date = new Date(data.dt*1000).toLocaleDateString("en-US");
+      
       let currentWeather = {
         city: data.name,
-        date: Date(data.dt*1000),
+        date: date,
+        icon: `http://openweathermap.org/img/w/${data.weather[0].icon}.png`,
         temp: data.main.temp,
         wind: data.wind.speed,
         humidity: data.main.humidity
       }
+
+     
 
       //Set currentWeather Object to local storage and create current weather card from new localstorage data
       localStorage.setItem('currentWeather', JSON.stringify(currentWeather));
@@ -191,29 +204,38 @@ function searchApi (city) {
       createCitiesButtons();
     })
 
-    let foreCastGeo = `http://api.openweathermap.org/data/2.5/forecast?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&cnt=5&appid=52d4c71f9cae17ae79966146d4c3044e`
+    let foreCastGeo = `http://api.openweathermap.org/data/2.5/forecast/?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
 
     fetch(foreCastGeo) 
       .then(function (response) {
         return response.json();
       })
       .then(function (data) {
+       console.log(data)
         let dataList = data.list
+       
         let fiveDayForecast = []
         
-        for (listItem of dataList) {
+        for(i=0; i < dataList.length; i+=8) {
          let forecastWeather = {
-           city: data.city.name,
-           date: Date(listItem.dt*1000),
-           temp: `Temp: ${listItem.main.temp} F`,
-           wind: `Wind: ${listItem.wind.speed} MPH`,
-           humidity: `Humidity: ${listItem.main.humidity} %`,
+          
+          date: new Date(dataList[i].dt*1000).toLocaleDateString("en-US"),
+          // icon: `http://openweathermap.org/img/w/${dataList[i].weather.icon}.png`,
+          icon: `http://openweathermap.org/img/w/${dataList[i].weather[0].icon}.png`,
+          temp: dataList[i].main.temp,
+          wind: dataList[i].wind.speed,
+          humidity: dataList[i].main.humidity,
          }
+         fiveDayForecast.push(forecastWeather)
          
-         fiveDayForecast.push(forecastWeather);
+        }
+        
+      console.log(fiveDayForecast[0].icon)
+        
          localStorage.setItem('fiveDayForecast', JSON.stringify(fiveDayForecast))
          createFiveDayForecastCards()
-        }
+         
+        
       })
     
   }) //end of .then where you started using other urls
