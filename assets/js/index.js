@@ -5,7 +5,7 @@ const currentWeatherEl = document.getElementById("current-weather");
 const fiveDayEl = document.getElementById("five-day");
 const cityBtnContEl = document.getElementById("cities-btn-container") 
 
-//Get items from local storage or set to an empty array
+//Get items from local storage or set to an empty array section below
 
 //Get cities from local storage or set to an empty array
 function getCitiesFromStorage () {
@@ -24,7 +24,7 @@ function getFiveDayForecastFromStorage () {
   return fiveDayForecast
 }
 
-//Create elements on page
+//Create elements on page section below
 
 //Create buttons from previous searches
 function createCitiesButtons() {
@@ -100,7 +100,7 @@ function createFiveDayForecastCards () {
   }  
 }
 
-//Functions to handle button clicks
+//Functions to handle button clicks section below
 
 //Click on search button after entering a city into the field to add to local storage
 searchBtnEl.addEventListener("click", function(e) {
@@ -126,7 +126,6 @@ createCurrentWeatherCard();
 createFiveDayForecastCards(); 
 
 //API section
-
 function searchApi (city) {  
   //Must start out with searching API for city by city name
   let weatherCityURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city},us&appid=52d4c71f9cae17ae79966146d4c3044e`
