@@ -57,7 +57,7 @@ function createCurrentWeatherCard () {
 
   else {
   currentWeatherEl.innerHTML = `
-    <div><h3>${currentWeather.city} ${currentWeather.date}</h3><img src="${currentWeather.icon}"></div>
+    <div><h2>${currentWeather.city} ${currentWeather.date}</h2><img src="${currentWeather.icon}"></div>
     <p>Temp: ${currentWeather.temp}&degF<p>
     <p>Wind: ${currentWeather.wind} MPH<p>
     <p>Humidity ${currentWeather.humidity}%<p>`
