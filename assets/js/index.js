@@ -147,7 +147,7 @@ createFiveDayForecastCards();
 function searchApi (city) {
   
   //Must start out with searching API for city by city name
-  let weatherCityURL = `http://api.openweathermap.org/data/2.5/forecast?q=${city},us&appid=52d4c71f9cae17ae79966146d4c3044e`
+  let weatherCityURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city},us&appid=52d4c71f9cae17ae79966146d4c3044e`
   
   
 
@@ -169,7 +169,7 @@ function searchApi (city) {
    
 
     
-    let currentGeoURL = `http://api.openweathermap.org/data/2.5/weather?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
+    let currentGeoURL = `https://api.openweathermap.org/data/2.5/weather?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
     
     fetch(currentGeoURL)
     .then(function (response) {
@@ -204,7 +204,7 @@ function searchApi (city) {
       createCitiesButtons();
     })
 
-    let foreCastGeo = `http://api.openweathermap.org/data/2.5/forecast/?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
+    let foreCastGeo = `https://api.openweathermap.org/data/2.5/forecast/?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
 
     fetch(foreCastGeo) 
       .then(function (response) {
