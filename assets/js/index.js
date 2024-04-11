@@ -181,7 +181,7 @@ function searchApi (city) {
       let currentWeather = {
         city: data.name,
         date: date,
-        icon: `http://openweathermap.org/img/w/${data.weather[0].icon}.png`,
+        icon: `https://openweathermap.org/img/w/${data.weather[0].icon}.png`,
         temp: data.main.temp,
         wind: data.wind.speed,
         humidity: data.main.humidity
@@ -221,7 +221,7 @@ function searchApi (city) {
           
           date: new Date(dataList[i].dt*1000).toLocaleDateString("en-US"),
           // icon: `http://openweathermap.org/img/w/${dataList[i].weather.icon}.png`,
-          icon: `http://openweathermap.org/img/w/${dataList[i].weather[0].icon}.png`,
+          icon: `https://openweathermap.org/img/w/${dataList[i].weather[0].icon}.png`,
           temp: dataList[i].main.temp,
           wind: dataList[i].wind.speed,
           humidity: dataList[i].main.humidity,
