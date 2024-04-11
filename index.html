@@ -4,29 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weather App</title>
-  <!-- add meta description -->
+  <meta name="description" content="Weather App displaying both current and 5 day weather forecast for any searched city. App will track your last 5 saved searches for future reference.">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   
   <div class="body-container">
+    
     <!-- Header -->
     <header>
       <h1>Weather Dashboard</h1>
     </header>
 
+    <!-- Main -->
     <main>
       <div class="sidebar">
+        <!-- City Search -->
         <h3>Search for a City:</h3>
         <div class="search-input">
           <input type="text" id="search-input">
           <button id="search-btn">Search</button>
         </div>
+        <!-- Search history buttons -->
         <div id="cities-btn-container"></div>
       </div>
 
       <section>
+        <!-- Current weather display for searched city or button press -->
         <div id="current-weather">Current forecast</div>
+        <!-- 5 day forecast display for searched city or button press -->
         <div id="five-day-cont">
           <h3>5 Day Forecast</h3>
           <div id="five-day"></div>

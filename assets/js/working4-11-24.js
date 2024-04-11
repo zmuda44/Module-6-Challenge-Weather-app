@@ -4,8 +4,8 @@ const searchInputEl = document.getElementById("search-input");
 const currentWeatherEl = document.getElementById("current-weather");
 const fiveDayEl = document.getElementById("five-day");
 const cityBtnContEl = document.getElementById("cities-btn-container") 
+// let cityBtn = document.getElementsByClassName("cityBtn")
 
-//Get items from local storage or set to an empty array
 
 //Get cities from local storage or set to an empty array
 function getCitiesFromStorage () {
@@ -24,9 +24,7 @@ function getFiveDayForecastFromStorage () {
   return fiveDayForecast
 }
 
-//Create elements on page
-
-//Create buttons from previous searches
+//Create Buttons from previous searches
 function createCitiesButtons() {
   cityBtnContEl.innerHTML = ''; // Clear existing buttons
   let cities = getCitiesFromStorage();
@@ -34,7 +32,7 @@ function createCitiesButtons() {
   if (cities.length > 5) {
     cities.shift()
   }
-  
+  // if(cities)
   cities.forEach(city => {
     
       let cityBtn = document.createElement("button");
@@ -43,14 +41,18 @@ function createCitiesButtons() {
       cityBtnContEl.insertBefore(cityBtn, cityBtnContEl.firstChild);
   
   localStorage.setItem('cities', JSON.stringify(cities))
-  });  
+  });
+  
+  
 }
 
 //Create current weather card to display on page
 function createCurrentWeatherCard () {
-  let currentWeather = getCurrentWeatherFromStorage();  
+  let currentWeather = getCurrentWeatherFromStorage();
   
-  if(currentWeather == null) {   
+  
+  if(currentWeather == null) {
+    
   }
 
   else {
@@ -63,8 +65,7 @@ function createCurrentWeatherCard () {
 
 } //end createCurrentWeather Card function
 
-//Create current weather card to display on page
-function createFiveDayForecastCards () {
+function createFiveDayForecastCards (){
   fiveDayEl.innerHTML = ''
   let fiveDayForecast = getFiveDayForecastFromStorage ()
 
@@ -86,31 +87,40 @@ function createFiveDayForecastCards () {
     const temp = document.createElement("p")
     //Special note: Couldn't do HTML symbol without HTML
     temp.innerHTML = `Temp: ${fiveDayForecast[i].temp}&degF`
-    fiveDayForecastCard.appendChild(temp)    
+    fiveDayForecastCard.appendChild(temp)
+    
 
     const wind = document.createElement("p")
     wind.textContent = `Wind: ${fiveDayForecast[i].wind} MPH`
-    fiveDayForecastCard.appendChild(wind)    
+    fiveDayForecastCard.appendChild(wind)
+    
 
     const humidity = document.createElement("p")
     humidity.textContent = `Humidity: ${fiveDayForecast[i].humidity}%`
     fiveDayForecastCard.appendChild(humidity)
 
-    fiveDayEl.appendChild(fiveDayForecastCard)  
-  }  
+    fiveDayEl.appendChild(fiveDayForecastCard)
+  
+  }
+
+  
 }
 
-//Functions to handle button clicks
+
+
 
 //Click on search button after entering a city into the field to add to local storage
 searchBtnEl.addEventListener("click", function(e) {
   e.preventDefault()
-
+    
   let searchedCity = searchInputEl.value
   
   searchApi(searchedCity);
+  // createCitiesButtons();
   searchInputEl.value = '';
 })
+
+
 
 //Add event listener to parent container of dynamically created buttons. 
 cityBtnContEl.addEventListener("click", function (e) {
@@ -120,16 +130,27 @@ cityBtnContEl.addEventListener("click", function (e) {
   }
 })
 
-//Runs the create buttons function on page load and will take whatever is in local storage and display it
+ //Runs the create buttons function on page load and will take whatever is in local storage and display it
 createCitiesButtons();
 createCurrentWeatherCard();
 createFiveDayForecastCards(); 
 
-//API section
 
-function searchApi (city) {  
+
+
+
+
+
+
+
+
+function searchApi (city) {
+  
   //Must start out with searching API for city by city name
   let weatherCityURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city},us&appid=52d4c71f9cae17ae79966146d4c3044e`
+  
+  
+
 
   fetch(weatherCityURL)
   .then(function (response) {
@@ -139,13 +160,15 @@ function searchApi (city) {
     return response.json()    
   })
 
-  .then(function (data) {    
+  .then(function (data) {
+    
     let cityGeoInfo = {
       lat: data.city.coord.lat,
       lon: data.city.coord.lon,
     }
+   
+
     
-    //Use information from fetch(weatherCityURL) to dynamically create current weather URL
     let currentGeoURL = `https://api.openweathermap.org/data/2.5/weather?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
     
     fetch(currentGeoURL)
@@ -162,7 +185,9 @@ function searchApi (city) {
         temp: data.main.temp,
         wind: data.wind.speed,
         humidity: data.main.humidity
-      }     
+      }
+
+     
 
       //Set currentWeather Object to local storage and create current weather card from new localstorage data
       localStorage.setItem('currentWeather', JSON.stringify(currentWeather));
@@ -179,7 +204,6 @@ function searchApi (city) {
       createCitiesButtons();
     })
 
-    ////Use information from fetch(weatherCityURL) to dynamically create 5 day forecast URL
     let foreCastGeo = `https://api.openweathermap.org/data/2.5/forecast/?lat=${cityGeoInfo.lat}&lon=${cityGeoInfo.lon}&units=imperial&appid=52d4c71f9cae17ae79966146d4c3044e`
 
     fetch(foreCastGeo) 
@@ -196,6 +220,7 @@ function searchApi (city) {
          let forecastWeather = {
           
           date: new Date(dataList[i].dt*1000).toLocaleDateString("en-US"),
+          // icon: `http://openweathermap.org/img/w/${dataList[i].weather.icon}.png`,
           icon: `https://openweathermap.org/img/w/${dataList[i].weather[0].icon}.png`,
           temp: dataList[i].main.temp,
           wind: dataList[i].wind.speed,
@@ -205,12 +230,18 @@ function searchApi (city) {
          
         }
         
-        localStorage.setItem('fiveDayForecast', JSON.stringify(fiveDayForecast))
-        createFiveDayForecastCards()        
+      console.log(fiveDayForecast[0].icon)
+        
+         localStorage.setItem('fiveDayForecast', JSON.stringify(fiveDayForecast))
+         createFiveDayForecastCards()
+         
+        
       })
     
-  }) //end of .then where you started using other urls  
-} //end function searchApi
+  }) //end of .then where you started using other urls
+
+  //end function searchApi
+}
 
 
 
